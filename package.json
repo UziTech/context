@@ -1,0 +1,38 @@
+{
+  "name": "context",
+  "main": "./lib/main",
+  "version": "0.0.0",
+  "description": "Provides a service for interacting with Atom context menu",
+  "keywords": [
+    "menu",
+    "context"
+  ],
+  "repository": "https://github.com/UziTech/git-menu",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.37.0 <2.0.0"
+  },
+  "scripts": {
+    "test": "atom --test spec",
+    "lint": "eslint .",
+    "semantic-release": "semantic-release"
+  },
+  "atomTestRunner": "./spec/runner.js",
+  "provideServices": {
+    "context": {
+      "description": "Methods for interacting with Atom context menu",
+      "versions": {
+        "0.1.0": "provideContext"
+      }
+    }
+  },
+  "dependencies": {
+    "key-path-helpers": "0.4.0"
+  },
+  "devDependencies": {
+    "@semantic-release/apm-config": "^6.0.1",
+    "atom-jasmine3-test-runner": "^4.3.2",
+    "eslint": "^5.16.0",
+    "semantic-release": "^15.13.14"
+  }
+}
