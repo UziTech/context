@@ -7,7 +7,7 @@
     "menu",
     "context"
   ],
-  "repository": "https://github.com/UziTech/git-menu",
+  "repository": "https://github.com/UziTech/context",
   "license": "MIT",
   "engines": {
     "atom": ">=1.37.0 <2.0.0"
