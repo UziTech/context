@@ -26,11 +26,11 @@ jobs:
         - npm install
         - npm run lint
 
-    - stage: release 🎉
-      if: branch = master && type != pull_request
-      script:
-        - chmod u+x ./semantic-release.sh
-        - ./semantic-release.sh
+    # - stage: release 🎉
+    #   if: branch = master && type != pull_request
+    #   script:
+    #     - chmod u+x ./semantic-release.sh
+    #     - ./semantic-release.sh
 
 notifications:
   email:
