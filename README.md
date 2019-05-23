@@ -5,3 +5,32 @@
 # context
 
 Provides a service for interacting with Atom context menu
+
+# Usage
+
+```js
+// in package.json
+{
+	...
+	"consumedServices": {
+		"context": {
+			"versions": {
+				"^0.1.0": "consumeContext"
+			}
+		}
+	},
+	...
+}
+```
+
+```js
+// in index.js
+	activate() {
+		...
+	},
+
+	consumeContext(context) {
+		// Create a context with your package name
+		this.context = context.getContext("my-package");
+	},
+```
