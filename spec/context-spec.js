@@ -12,7 +12,6 @@ function attachHtml(html) {
 describe("context", () => {
 	beforeEach(async function () {
 		this.context = (await atom.packages.activatePackage("context")).mainModule;
-		// console.log(this.context);
 		this.workspace = atom.views.getView(atom.workspace);
 	});
 
@@ -47,12 +46,9 @@ describe("context", () => {
 		});
 
 		it("should add menu item", function () {
-			const spy = jasmine.createSpy();
-			atom.commands.add(this.workspace, "test:command", spy);
-
 			spyOn(atom.commands, "add").and.callThrough();
 			spyOn(atom.contextMenu, "add").and.callThrough();
-			spyOn(atom.config, "set").and.callThrough();
+			spyOn(atom.config, "setSchema").and.callThrough();
 
 			this.ctx.addMenuItem({
 				keyPath: "test",
@@ -61,11 +57,26 @@ describe("context", () => {
 
 			expect(atom.commands.add).not.toHaveBeenCalled();
 			expect(atom.contextMenu.add).toHaveBeenCalled();
-			expect(atom.config.set).toHaveBeenCalled();
+			expect(atom.config.setSchema).toHaveBeenCalled();
 		});
 
 		it("should add command given function", function () {
-			const spy = jasmine.createSpy();
+			const spy = jasmine.createSpy("command");
+			spyOn(atom.commands, "add").and.callThrough();
+
+			this.ctx.addMenuItem({
+				keyPath: "test",
+				command: spy,
+			});
+
+			atom.commands.dispatch(this.workspace, "context:test.test");
+
+			expect(spy).toHaveBeenCalled();
+			expect(atom.commands.add).toHaveBeenCalled();
+		});
+
+		it("should call command given function", function () {
+			const spy = jasmine.createSpy("command");
 
 			spyOn(atom.commands, "add").and.callThrough();
 
@@ -74,19 +85,67 @@ describe("context", () => {
 				command: spy,
 			});
 
-			expect(atom.commands.add).toHaveBeenCalled();
-		});
+			const template = atom.contextMenu.templateForElement(this.workspace).find(i => i.label === "test");
+			atom.commands.dispatch(this.workspace, template.command);
 
-		it("should add menu item to template", function () {
-			// TODO:
+			expect(spy).toHaveBeenCalled();
 		});
 
 		it("should add config", function () {
-			// TODO:
+			this.ctx.addMenuItem({
+				keyPath: "test.command",
+				command: "test:command",
+			});
+
+			expect(atom.config.getSchema("context.test").type).toBe("object");
+			expect(atom.config.getSchema("context.test.test").type).toBe("object");
+			expect(atom.config.getSchema("context.testSubmenu").type).toBe("boolean");
+			expect(atom.config.getSchema("context.test.testSubmenu").type).toBe("boolean");
+			expect(atom.config.getSchema("context.test.test.command").type).toBe("boolean");
 		});
 
-		it("should remove menuItem on config change", function () {
-			// TODO:
+		it("should add menu item to template", function () {
+			this.ctx.addMenuItem({
+				keyPath: "test.command",
+				command: "test:command",
+			});
+			const template = atom.contextMenu.templateForElement(this.workspace).find(i => i.label === "test");
+
+			expect(template.submenu[0].label).toBe("command");
+			expect(template.submenu[0].command).toBe("test:command");
+		});
+
+		it("should hide menu item on config change", function () {
+			this.ctx.addMenuItem({
+				keyPath: "test.command",
+				command: "test:command",
+			});
+			atom.config.set("context.test.test.command", false);
+			const template = atom.contextMenu.templateForElement(this.workspace).find(i => i.label === "test");
+
+			expect(template).not.toBeDefined();
+		});
+
+		it("should hide menu item on submenu config change", function () {
+			this.ctx.addMenuItem({
+				keyPath: "test.command",
+				command: "test:command",
+			});
+			atom.config.set("context.test.testSubmenu", false);
+			const template = atom.contextMenu.templateForElement(this.workspace).find(i => i.label === "test");
+
+			expect(template).not.toBeDefined();
+		});
+
+		it("should hide menu item on name config change", function () {
+			this.ctx.addMenuItem({
+				keyPath: "test.command",
+				command: "test:command",
+			});
+			atom.config.set("context.testSubmenu", false);
+			const template = atom.contextMenu.templateForElement(this.workspace).find(i => i.label === "test");
+
+			expect(template).not.toBeDefined();
 		});
 
 		it("should return disposable", function () {
